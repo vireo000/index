@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hallo!</title>
+    <style>
+        /* 全局样式 */
+        body {
+            font-family: Arial, sans-serif;
+            color: black;
+            background-color: #ffc0cb;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        /* 密码输入框容器样式 */
+        #password-container {
+            background-color: white;
+            border: 3px solid #FFA0C1;
+            padding: 20px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* 密码输入框样式 */
+        #password-input {
+            padding: 8px;
+            border: 2px solid #FFA0C1;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        /* 提交按钮样式 */
+        #submit-btn {
+            background-color: white;
+            border: 2px solid #FFA0C1;
+            color: #FFA0C1;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #submit-btn:hover {
+            background-color: #FFF0F5;
+        }
+
+        /* 主内容区域，初始隐藏 */
+        #main-content {
+            display: none;
+            position: relative;
+            width: 100%;
+            height: 100vh;
+        }
+
+        /* 爱心样式 */
+       .heart {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: red;
+            opacity: 0.2;
+            transform: rotate(-45deg);
+            animation: float 5s linear infinite;
+        }
+
+       .heart::before,
+       .heart::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: red;
+            border-radius: 50%;
+        }
+
+       .heart::before {
+            top: -10px;
+            left: 0;
+        }
+
+       .heart::after {
+            left: 10px;
+            top: 0;
+        }
+
+        /* 爱心漂浮动画 */
+        @keyframes float {
+            0% {
+                bottom: -20px;
+                opacity: 0.2;
+            }
+            100% {
+                bottom: 100vh;
+                opacity: 0;
+            }
+        }
+
+        /* 消息显示区域样式 */
+        #message-container {
+            position: absolute;
+	    top:50%;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+
+        }
+
+    #message-container p {
+        font-size: 24px; /* 可以根据需要调整字体大小 */
+    }
+    </style>
+</head>
+
+<body>
+    <!-- 密码输入框容器 -->
+    <div id="password-container">
+        <label for="password-input">请输入密码:</label>
+        <input type="password" id="password-input">
+        <button id="submit-btn" onclick="checkPassword()">提交</button>
+    </div>
+    <!-- 主内容区域 -->
+    <div id="main-content">
+        <!-- 消息显示区域 -->
+        <div id="message-container"></div>
+    </div>
+
+    <script>
+        function checkPassword() {
+            const correctPassword = "rxoo";
+            const userInput = document.getElementById('password-input').value;
+            if (userInput === correctPassword) {
+                // 密码正确，显示主内容，隐藏密码输入框
+                document.getElementById('main-content').style.display = 'block';
+                document.getElementById('password-container').style.display = 'none';
+                createHearts();
+            } else {
+                alert('密码错误，请重新输入。');
+                // 清空输入框
+                document.getElementById('password-input').value = '';
+            }
+        }
+
+        function createHearts() {
+            const numHearts = 50;
+            const mainContent = document.getElementById('main-content');
+            for (let i = 0; i < numHearts; i++) {
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                mainContent.appendChild(heart);
+            }
+        }
+
+        const messages = [
+            "Hi最近如何？",
+            "有什么新鲜事吗？",
+            "今天过得怎么样？",
+            "最近会不会觉得无聊？",
+            "有空的话我会上这里更新一下的，网页有点简陋，抱歉。",
+            "其实我也不知道为什么要做这个，我想试着自学一点制作网页的知识然后自己做一个网页，不过只能上传静态的不能互动的网页，毕竟免费。",
+            "阿嚏！",
+            "do u miss me ?",
+            "我时不时来更新一些话，分享心情什么的，这个网页看起来就像一个日记本？",
+            "我觉得挺好玩的，目前还只是测试看看。",
+            "ee",
+            "或者我会在这里记录一些我们之间的趣事",
+            "你想听什么？",
+            "还记得老头走到你身边看你的英语报吗？哈哈哈",
+            "有意思。",
+            "心情如何呢？又想家了吗？",
+            "咩咩咩",
+            "不变的是友谊",
+            "哪一天我要学会自己添加一些功能进来，不再全部依靠ai。",
+            "最近在读什么书？",
+            "你老是喜欢发捂脸笑的表情给我。",
+            "有没有感觉缘分真的很奇妙？为什么八班偏偏只有我们两个到现在还有联系呢？其他人我都没有在聊天了。",
+            "哈哈",
+            "有什么德语歌曲推荐？",
+            "聊聊人生，却发现不知从何处聊起。",
+            "有人在默默关注着你吗？",
+            "谈谈未来，不如先看看当下吧。",
+            "人生就像一杯椰树牌椰汁...我从小喝到大。",
+            "开心。",
+            "有时候，代码有一个错误，就会导致整个网页无法运作，不过，即使你犯了再多的错，也能继续好好生活下去。",
+            "德国有没有做美甲的地方？感觉外国的美甲都好丑",
+        ];
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const mainContent = document.getElementById('main-content');
+            mainContent.addEventListener('click', function () {
+                const messageContainer = document.getElementById('message-container');
+                const randomIndex = Math.floor(Math.random() * messages.length);
+                const newMessage = document.createElement('p');
+                newMessage.textContent = messages[randomIndex];
+                messageContainer.innerHTML = ''; // 清空之前的消息
+                messageContainer.appendChild(newMessage);
+            });
+        });
+
+    </script>
+</body>
+
+</html>
