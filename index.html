@@ -64,7 +64,7 @@
         }
 
         /* 爱心样式 */
-       .heart {
+        .heart {
             position: absolute;
             width: 20px;
             height: 20px;
@@ -74,8 +74,8 @@
             animation: float 5s linear infinite;
         }
 
-       .heart::before,
-       .heart::after {
+        .heart::before,
+        .heart::after {
             content: '';
             position: absolute;
             width: 20px;
@@ -84,12 +84,12 @@
             border-radius: 50%;
         }
 
-       .heart::before {
+        .heart::before {
             top: -10px;
             left: 0;
         }
 
-       .heart::after {
+        .heart::after {
             left: 10px;
             top: 0;
         }
@@ -109,17 +109,135 @@
         /* 消息显示区域样式 */
         #message-container {
             position: absolute;
-	    top:50%;
+            top: 50%;
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
             text-align: center;
-
         }
 
-    #message-container p {
-        font-size: 24px; /* 可以根据需要调整字体大小 */
-    }
+        #message-container p {
+            font-size: 24px;
+        }
+
+        /* 绘画按钮样式 */
+        #draw-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: transparent;
+            border: none;
+            color: black;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        /* 绘画区域样式 */
+        #drawing-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            z-index: 1000;
+        }
+
+        /* 画布容器样式 */
+        #canvas-container {
+            position: relative;
+            width: 80%;
+            height: 80%;
+            margin: 50px auto;
+            border: 2px solid #ccc;
+        }
+
+        /* 画布样式 */
+        #drawing-canvas {
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+        }
+
+        /* 工具栏样式 */
+        #toolbar {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* 工具按钮样式 */
+        .tool-btn {
+            background-color: transparent;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        /* 完成按钮样式 */
+        #done-btn {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: transparent;
+            border: 2px solid #ff69b4;
+            color: black;
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+        }
+
+        /* 大小调节栏样式 */
+        .size-slider {
+            display: none;
+            position: absolute;
+            right: -120px; /* 调整到标志右侧 */
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100px;
+            height: 5px;
+            background-color: #ccc;
+            border-radius: 5px;
+        }
+
+        .size-slider-thumb {
+            position: absolute;
+            top: -5px;
+            left: 0;
+            width: 15px;
+            height: 15px;
+            background-color: #ff69b4;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        /* 颜色选择器样式 */
+        .color-picker {
+            display: none;
+            position: absolute;
+            right: -120px; /* 调整到标志右侧 */
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            width: 60px;
+        }
+
+        .color-circle {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid #ccc;
+        }
     </style>
 </head>
 
@@ -132,8 +250,42 @@
     </div>
     <!-- 主内容区域 -->
     <div id="main-content">
+        <!-- 绘画按钮 -->
+        <button id="draw-btn" onclick="openDrawingModal()">绘画</button>
         <!-- 消息显示区域 -->
         <div id="message-container"></div>
+    </div>
+
+    <!-- 绘画区域 -->
+    <div id="drawing-modal">
+        <div id="canvas-container">
+            <canvas id="drawing-canvas"></canvas>
+            <!-- 工具栏 -->
+            <div id="toolbar">
+                <button class="tool-btn" onclick="setTool('brush')">🖌️</button>
+                <div class="size-slider" id="brush-slider">
+                    <div class="size-slider-thumb"></div>
+                </div>
+                <button class="tool-btn" onclick="setTool('eraser')">🧽</button>
+                <div class="size-slider" id="eraser-slider">
+                    <div class="size-slider-thumb"></div>
+                </div>
+                <button class="tool-btn" onclick="openColorPicker()">🎨</button>
+                <div class="color-picker" id="color-picker">
+                    <div class="color-circle" style="background-color: black;"></div>
+                    <div class="color-circle" style="background-color: red;"></div>
+                    <div class="color-circle" style="background-color: yellow;"></div>
+                    <div class="color-circle" style="background-color: green;"></div>
+                    <div class="color-circle" style="background-color: blue;"></div>
+                    <div class="color-circle" style="background-color: purple;"></div>
+                    <div class="color-circle" style="background-color: pink;"></div>
+                    <div class="color-circle" style="background-color: orange;"></div>
+                </div>
+                <button class="tool-btn" onclick="undo()">←</button>
+            </div>
+            <!-- 完成按钮 -->
+            <button id="done-btn" onclick="saveDrawing()">完成</button>
+        </div>
     </div>
 
     <script>
@@ -141,13 +293,11 @@
             const correctPassword = "rxoo";
             const userInput = document.getElementById('password-input').value;
             if (userInput === correctPassword) {
-                // 密码正确，显示主内容，隐藏密码输入框
                 document.getElementById('main-content').style.display = 'block';
                 document.getElementById('password-container').style.display = 'none';
                 createHearts();
             } else {
                 alert('密码错误，请重新输入。');
-                // 清空输入框
                 document.getElementById('password-input').value = '';
             }
         }
@@ -165,37 +315,8 @@
         }
 
         const messages = [
-            "Hi最近如何？",
-            "有什么新鲜事吗？",
-            "今天过得怎么样？",
-            "最近会不会觉得无聊？",
-            "有空的话我会上这里更新一下的，网页有点简陋，抱歉。",
-            "其实我也不知道为什么要做这个，我想试着自学一点制作网页的知识然后自己做一个网页，不过只能上传静态的不能互动的网页，毕竟免费。",
-            "阿嚏！",
-            "do u miss me ?",
-            "我时不时来更新一些话，分享心情什么的，这个网页看起来就像一个日记本？",
-            "我觉得挺好玩的，目前还只是测试看看。",
-            "ee",
-            "或者我会在这里记录一些我们之间的趣事",
-            "你想听什么？",
-            "还记得老头走到你身边看你的英语报吗？哈哈哈",
-            "有意思。",
-            "心情如何呢？又想家了吗？",
-            "咩咩咩",
-            "不变的是友谊",
-            "哪一天我要学会自己添加一些功能进来，不再全部依靠ai。",
-            "最近在读什么书？",
-            "你老是喜欢发捂脸笑的表情给我。",
-            "有没有感觉缘分真的很奇妙？为什么八班偏偏只有我们两个到现在还有联系呢？其他人我都没有在聊天了。",
-            "哈哈",
-            "有什么德语歌曲推荐？",
-            "聊聊人生，却发现不知从何处聊起。",
-            "有人在默默关注着你吗？",
-            "谈谈未来，不如先看看当下吧。",
-            "人生就像一杯椰树牌椰汁...我从小喝到大。",
-            "开心。",
-            "有时候，代码有一个错误，就会导致整个网页无法运作，不过，即使你犯了再多的错，也能继续好好生活下去。",
-            "德国有没有做美甲的地方？感觉外国的美甲都好丑",
+            "点击右上角，看我给你添加了什么好东西","要开学了..","我把我的胡迪手办带来宿舍了","我的饼干...放在宿舍一整个寒假，都潮了...软掉了...好难吃/////","有没有遇见喜欢的人？","德国的夜晚有没有星星？","我以为你复活节要回厦门，还在想要不要给你画一个复活节彩蛋","有没有感觉虽然我们每天都可以通过微信聊天，但还是在网站上像写信一样？感觉好有趣","德国的店里卖的东西真笑死我了",
+		"你有没有买一袋jj软糖？我还挺想看看那个姿势软糖拆开是不是和包装上的一模一样呢？","周二我打算和舍友们出去玩。","你在德国会接到来自中国的骚扰电话吗？","你是不是只能看德国的新闻？","刚刚在百度搜索一部电视剧的名字，有一个网站提供免费观看，结果点进去是av，我差点就在舍友面前大丢脸啦！！","其实我在想，要不要我在下方添加一张可爱的布丁狗图片，你点击它就会有这些对话，就像电子宠物一样，但是我现在还不会写这种代码"
         ];
 
         document.addEventListener('DOMContentLoaded', function () {
@@ -205,11 +326,161 @@
                 const randomIndex = Math.floor(Math.random() * messages.length);
                 const newMessage = document.createElement('p');
                 newMessage.textContent = messages[randomIndex];
-                messageContainer.innerHTML = ''; // 清空之前的消息
+                messageContainer.innerHTML = '';
                 messageContainer.appendChild(newMessage);
             });
         });
 
+        // 绘画功能
+        let canvas, ctx;
+        let currentTool = 'brush';
+        let currentColor = 'black';
+        let currentSize = 5;
+        let drawingHistory = [];
+        let isDrawing = false;
+
+        function openDrawingModal() {
+            const modal = document.getElementById('drawing-modal');
+            modal.style.display = 'block';
+            initCanvas();
+        }
+
+        function initCanvas() {
+            canvas = document.getElementById('drawing-canvas');
+            ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+        }
+
+        function startDrawing(e) {
+            isDrawing = true;
+            draw(e);
+            saveState();
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            ctx.lineWidth = currentSize;
+            ctx.lineCap = 'round';
+
+            if (currentTool === 'brush') {
+                ctx.strokeStyle = currentColor;
+                ctx.globalCompositeOperation = 'source-over';
+            } else if (currentTool === 'eraser') {
+                ctx.strokeStyle = 'white';
+                ctx.globalCompositeOperation = 'source-over';
+            }
+
+            ctx.lineTo(e.offsetX, e.offsetY);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(e.offsetX, e.offsetY);
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+            ctx.beginPath();
+        }
+
+        function setTool(tool) {
+            currentTool = tool;
+            if (tool === 'brush') {
+                document.getElementById('brush-slider').style.display = 'block';
+                document.getElementById('eraser-slider').style.display = 'none';
+            } else if (tool === 'eraser') {
+                document.getElementById('eraser-slider').style.display = 'block';
+                document.getElementById('brush-slider').style.display = 'none';
+                currentColor = 'white';  // 将橡皮擦工具改成白色画笔
+            }
+        }
+
+        function openColorPicker() {
+            const colorPicker = document.getElementById('color-picker');
+            colorPicker.style.display = colorPicker.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function undo() {
+            if (drawingHistory.length > 0) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.putImageData(drawingHistory.pop(), 0, 0);
+            }
+        }
+
+        function saveState() {
+            drawingHistory.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+        }
+
+        function saveDrawing() {
+            const image = canvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.href = image;
+            link.download = 'drawing.png';
+            link.click();
+            closeDrawingModal();
+        }
+
+        function closeDrawingModal() {
+            const modal = document.getElementById('drawing-modal');
+            modal.style.display = 'none';
+        }
+
+        // 大小调节栏功能
+        const brushSlider = document.getElementById('brush-slider');
+        const eraserSlider = document.getElementById('eraser-slider');
+        const brushThumb = brushSlider.querySelector('.size-slider-thumb');
+        const eraserThumb = eraserSlider.querySelector('.size-slider-thumb');
+
+        function setupSlider(slider, thumb, callback) {
+            let isDragging = false;
+
+            thumb.addEventListener('mousedown', function (e) {
+                isDragging = true;
+            });
+
+            document.addEventListener('mousemove', function (e) {
+                if (isDragging) {
+                    const rect = slider.getBoundingClientRect();
+                    let x = e.clientX - rect.left;
+                    x = Math.max(0, Math.min(x, rect.width));
+                    thumb.style.left = x + 'px';
+                    callback(x / rect.width);
+                }
+            });
+
+            document.addEventListener('mouseup', function () {
+                isDragging = false;
+            });
+        }
+
+        setupSlider(brushSlider, brushThumb, function (value) {
+            currentSize = Math.round(value * 50) + 5;
+        });
+
+        setupSlider(eraserSlider, eraserThumb, function (value) {
+            currentSize = Math.round(value * 50) + 5;
+        });
+
+        // 颜色选择器功能
+        const colorCircles = document.querySelectorAll('.color-circle');
+        colorCircles.forEach(circle => {
+            circle.addEventListener('click', function () {
+                currentColor = window.getComputedStyle(circle).backgroundColor;
+                document.getElementById('color-picker').style.display = 'none';
+            });
+        let isSliderVisible = false;
+        document.querySelector('.tool-btn').addEventListener('click', function () {
+            const brushSlider = document.getElementById('brush-slider');
+            isSliderVisible = !isSliderVisible;
+            brushSlider.style.display = isSliderVisible ? 'block' : 'none';
+        });
+        });
     </script>
 </body>
 
